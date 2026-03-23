@@ -193,7 +193,7 @@ HOURLY AGGREGATES (for trend charts)
 CREATE MATERIALIZED VIEW agg_hourly
 WITH (timescaledb.continuous) AS
 SELECT
-    time_bucket('1 hour', time)     AS bucket,
+    time_bucket('1 hour', time, 'Asia/Kolkata')     AS bucket,
     equipment_id,
     equipment_code,
     area_code,
@@ -219,5 +219,14 @@ SELECT add_continuous_aggregate_policy('agg_hourly',
     start_offset => INTERVAL '3 hours',
     end_offset   => INTERVAL '1 minute',
     schedule_interval => INTERVAL '15 minute'
+);
+```
+
+Manual refresh
+```bash
+CALL refresh_continuous_aggregate(
+    'agg_hourly',
+    NOW() - INTERVAL '60 hours',
+    NOW() - INTERVAL '1 hour'
 );
 ```
