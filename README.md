@@ -187,3 +187,37 @@ Retention: auto-drop raw data older than 2 years (aggregates kept forever)
 ```bash
 SELECT add_retention_policy('raw_readings', INTERVAL '2 years');
 ```
+
+HOURLY AGGREGATES (for trend charts)
+```bash
+CREATE MATERIALIZED VIEW agg_hourly
+WITH (timescaledb.continuous) AS
+SELECT
+    time_bucket('1 hour', time)     AS bucket,
+    equipment_id,
+    equipment_code,
+    area_code,
+	MAX(kwh_import) - MIN(kwh_import) AS kwh_consumed,
+	MAX(kwh_import) 	AS kwh_total,
+    AVG(kw)             AS avg_kw,
+    AVG(kva)            AS avg_kva,
+    AVG(kvar)           AS avg_kvar,
+    AVG(power_factor)   AS avg_pf,
+    MIN(power_factor)   AS min_pf,
+    AVG(voltage_avg)    AS avg_voltage,
+    AVG(current_avg)    AS avg_current,
+    AVG(frequency)      AS avg_frequency,
+    COUNT(*)            AS reading_count
+FROM raw_readings
+GROUP BY bucket, equipment_id, equipment_code, area_code
+WITH NO DATA;
+```
+
+HOURLY AGGREGATES Policy
+```bash
+SELECT add_continuous_aggregate_policy('agg_hourly',
+    start_offset => INTERVAL '3 hours',
+    end_offset   => INTERVAL '1 minute',
+    schedule_interval => INTERVAL '15 minute'
+);
+```
