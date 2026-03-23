@@ -6,46 +6,38 @@ https://www.postgresql.org/download/windows/
 ```
 Add Enviroment Variable Path
 ```bash
-Press Windows + R, type sysdm.cpl and hit Enter
+Press Windows + R, type "sysdm.cpl" and hit Enter
 Go to the Advanced tab
 Click "Environment Variables..."
 ```
+
+Adding/Editing the PATH
 ```bash
-psql
+C:\Program Files\PostgreSQL\18\bin
 ```
+Verify It Works [Open a new Command Prompt (important — existing ones won't reflect the change) and run:]
 ```bash
-SHOW hba_file;
-```
-Create a user
-```bash
-create user vc password 'pgAdmin@4';
+pg_config
 ```
 
-Create a db
+## Download & Install TimeScaleDb
+
+Download
 ```bash
-create database IIOT;
+https://www.tigerdata.com/docs/self-hosted/latest/install/installation-windows#supported-platforms
 ```
 
-grant all privileges on database
+Extract at C:\Program Files\PostgreSQL\18
 ```bash
-grant all privileges on database IIOT to vc;
+right-click setup.exe and choose Run as Administrator.
+```
+Complete the installation wizard. During installation, it will prompt you to run the timescaledb-tune script to optimize your PostgreSQL configuration — it is recommended to accept this option
+
+Enable TimescaleDB on Your Database
+```bash
+CREATE EXTENSION IF NOT EXISTS timescaledb;
 ```
 
-Create a Super user
-```bash
-create user shuvendu password 'pgAdmin@4';
-```
-```bash
-ALTER USER shuvendu WITH SUPERUSER;
-```
-
-Exit from console
-```bash
-\q
-```
-```bash
-exit
-```
 
 Edit the hba file and Change the IPv4 local connection address to 0.0.0.0/0  
 ```bash
